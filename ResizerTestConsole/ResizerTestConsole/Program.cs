@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,15 +14,28 @@ namespace ResizerTestConsole
 
             Console.WriteLine("**** Image Resizer multithread testing ****");
 
-            // 
-            ImageProcessor imgProcessor = new ImageProcessor(@"..\..\TestImages\Earth_house.jpg");
+            
+            string[] ListImages = Directory.GetFiles(@"..\..\TestImages\", "*.jpg");
 
-            ThreadRunner threadRunner = new ThreadRunner(imgProcessor.ProcessImage);
+            var processors = new List<ImageProcessor>();
 
-            threadRunner.RunThreads(10);
+            foreach (var item in ListImages)
+            {
+                processors.Add(new ImageProcessor(item));
+            }
+
+            //ImageProcessor imgProcessor = new ImageProcessor(@"..\..\TestImages\Earth_house.jpg");
+            //ThreadRunner threadRunner = new ThreadRunner(imgProcessor.ProcessImage);
+            //threadRunner.RunThreads(10);
+
+            foreach (var processor in processors)
+            {
+                ThreadRunner threadRunner = new ThreadRunner(processor.ProcessImage);
+                threadRunner.RunThreads(10);
+            }
 
 
-            Console.WriteLine("*** Finished any key to quite *** ");
+            Console.WriteLine("*** Finished any key to quit *** ");
             Console.ReadKey();
         }
     }

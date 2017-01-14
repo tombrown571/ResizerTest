@@ -59,7 +59,19 @@
     <Folder Include="TestImages\TestOutput\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestImages\brickhouse.jpg" />
+    <Content Include="TestImages\BromleyHouse.jpg" />
+    <Content Include="TestImages\council.jpg" />
     <Content Include="TestImages\Earth_house.jpg" />
+    <Content Include="TestImages\grimhouse.jpg" />
+    <Content Include="TestImages\Haunted.png" />
+    <Content Include="TestImages\House.jpg" />
+    <Content Include="TestImages\HP.jpg" />
+    <Content Include="TestImages\london_housing.jpg" />
+    <Content Include="TestImages\Luxury.jpg" />
+    <Content Include="TestImages\ModernHome.jpg" />
+    <Content Include="TestImages\Newsham-Park-Hospital-4.jpg" />
+    <Content Include="TestImages\townhall.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
