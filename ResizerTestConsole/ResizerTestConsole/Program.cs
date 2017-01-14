@@ -10,6 +10,19 @@ namespace ResizerTestConsole
     {
         static void Main(string[] args)
         {
+
+            Console.WriteLine("**** Image Resizer multithread testing ****");
+
+            // 
+            ImageProcessor imgProcessor = new ImageProcessor(@".\TestImages\Earth_house.jpg");
+
+            ThreadRunner threadRunner = new ThreadRunner(imgProcessor.ProcessImage);
+
+            threadRunner.RunThreads(10);
+
+
+            Console.WriteLine("*** Finished any key to quite *** ");
+            Console.ReadKey();
         }
     }
 }

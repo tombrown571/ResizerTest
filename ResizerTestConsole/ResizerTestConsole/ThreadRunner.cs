@@ -9,8 +9,8 @@ namespace ResizerTestConsole
 {
     public class ThreadRunner
     {
-        private Delegate _fireMethod;
-        public ThreadRunner(Delegate fireMethod)
+        private Func<bool> _fireMethod;
+        public ThreadRunner(Func<bool> fireMethod)
         {
             _fireMethod = fireMethod;
         }
@@ -35,7 +35,7 @@ namespace ResizerTestConsole
 
         private void InvokeWork()
         {
-            _fireMethod.DynamicInvoke(null);
+            var result = _fireMethod();
         }
     }
 }
