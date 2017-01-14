@@ -14,7 +14,7 @@ namespace ResizerTestConsole
             Console.WriteLine("**** Image Resizer multithread testing ****");
 
             // 
-            ImageProcessor imgProcessor = new ImageProcessor(@".\TestImages\Earth_house.jpg");
+            ImageProcessor imgProcessor = new ImageProcessor(@"..\..\TestImages\Earth_house.jpg");
 
             ThreadRunner threadRunner = new ThreadRunner(imgProcessor.ProcessImage);
 

@@ -9,8 +9,8 @@ namespace ResizerTestConsole
 {
     public class ThreadRunner
     {
-        private Func<bool> _fireMethod;
-        public ThreadRunner(Func<bool> fireMethod)
+        private Func<string, bool> _fireMethod;
+        public ThreadRunner(Func<string, bool> fireMethod)
         {
             _fireMethod = fireMethod;
         }
@@ -22,7 +22,12 @@ namespace ResizerTestConsole
             {
                 for (int i = 0; i < threadCount; i++)
                 {
-                    Thread th = new Thread(InvokeWork);
+                    Console.WriteLine("Invoking thread {0}", i);
+
+                    string newImg = Guid.NewGuid().ToString();
+
+                    Thread th = new Thread(() => InvokeWork(newImg));
+                    th.Start();
                 }
                 runall = true;
             }
@@ -33,9 +38,9 @@ namespace ResizerTestConsole
             return runall;
         }
 
-        private void InvokeWork()
+        private void InvokeWork(string newPath)
         {
-            var result = _fireMethod();
+            var result = _fireMethod(newPath);
         }
     }
 }
