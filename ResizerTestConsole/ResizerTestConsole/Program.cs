@@ -14,7 +14,14 @@ namespace ResizerTestConsole
 
             Console.WriteLine("**** Image Resizer multithread testing ****");
 
-            
+            // clear output
+            DirectoryInfo di = new DirectoryInfo(@"..\..\TestImages\TestOutput");
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+
+
             string[] ListImages = Directory.GetFiles(@"..\..\TestImages\", "*.jpg");
 
             var processors = new List<ImageProcessor>();
@@ -24,14 +31,17 @@ namespace ResizerTestConsole
                 processors.Add(new ImageProcessor(item));
             }
 
-            //ImageProcessor imgProcessor = new ImageProcessor(@"..\..\TestImages\Earth_house.jpg");
-            //ThreadRunner threadRunner = new ThreadRunner(imgProcessor.ProcessImage);
-            //threadRunner.RunThreads(10);
+            List<int> imgDims = new List<int>() { 200, 320, 640, 768, 1024, 1080 };
+
 
             foreach (var processor in processors)
             {
                 ThreadRunner threadRunner = new ThreadRunner(processor.ProcessImage);
-                threadRunner.RunThreads(10);
+                // run will all dimensions
+                foreach (var dim in imgDims)
+                {
+                    threadRunner.RunThreads(10, dim);
+                }
             }
 
 

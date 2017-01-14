@@ -38,14 +38,14 @@ namespace ResizerTestConsole
         }
 
 
-        public bool ProcessImage(string outputName)
+        public bool ProcessImage(string outputName, int maxDimension = 200)
         {
-            // ImageResizer.Resizing.RequestedAction.
-            //System.Threading.Thread.Sleep(500);
 
             var outputPath = Path.Combine(_outputDir, outputName + ".jpg");
 
-            ImageBuilder.Current.Build(_imagePath, outputPath, new ResizeSettings("maxwidth=200&maxheight=200"));
+            string resizeSetting = string.Format("maxwidth={0}&maxheight={0}", maxDimension);
+
+            ImageBuilder.Current.Build(_imagePath, outputPath, new ResizeSettings(resizeSetting));
 
 
             return true;

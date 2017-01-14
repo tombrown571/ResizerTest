@@ -9,13 +9,16 @@ namespace ResizerTestConsole
 {
     public class ThreadRunner
     {
-        private Func<string, bool> _fireMethod;
-        public ThreadRunner(Func<string, bool> fireMethod)
+
+        private int _memexceptionCount;
+
+        private Func<string, int, bool> _fireMethod;
+        public ThreadRunner(Func<string, int, bool> fireMethod)
         {
             _fireMethod = fireMethod;
         }
 
-        public bool RunThreads(int threadCount)
+        public bool RunThreads(int threadCount, int dimension)
         {
             bool runall = false;
             try
@@ -26,7 +29,7 @@ namespace ResizerTestConsole
 
                     string newImg = Guid.NewGuid().ToString();
 
-                    Thread th = new Thread(() => InvokeWork(newImg));
+                    Thread th = new Thread(() => InvokeWork(newImg, dimension));
                     th.Start();
                 }
                 runall = true;
@@ -38,9 +41,21 @@ namespace ResizerTestConsole
             return runall;
         }
 
-        private void InvokeWork(string newPath)
+        private void InvokeWork(string newPath, int dimension)
         {
-            var result = _fireMethod(newPath);
+            try
+            {
+                var result = _fireMethod(newPath, dimension);
+            }
+            catch(System.OutOfMemoryException mex)
+            {
+                _memexceptionCount++;
+                Console.WriteLine("MemoryExcption Count {0}", _memexceptionCount);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Exception {0}\n{1}", ex.Message, ex.StackTrace);
+            }
         }
     }
 }
