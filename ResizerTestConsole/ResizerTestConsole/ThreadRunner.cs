@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,53 +10,98 @@ namespace ResizerTestConsole
 {
     public class ThreadRunner
     {
+        private int _successCount;
 
-        private int _memexceptionCount;
-
-        private Func<string, int, bool> _fireMethod;
-        public ThreadRunner(Func<string, int, bool> fireMethod)
+        public int SuccessCount
         {
-            _fireMethod = fireMethod;
+            get { return _successCount; }
         }
 
-        public bool RunThreads(int threadCount, int dimension)
+        private ConcurrentBag<ErrorLogStruct> _errorLog;
+
+        private Func<string, int, bool> _fireMethod;
+        public ThreadRunner(Func<string, int, bool> fireMethod,          ConcurrentBag<ErrorLogStruct> errorLog)
         {
-            bool runall = false;
-            try
+            _fireMethod = fireMethod;
+            _errorLog = errorLog;
+            _successCount = 0;
+        }
+
+        public List<Thread> RunThreads(int iteration, int threadCount, int dimension)
+        {
+            List<Thread> threads = new List<Thread>();
+            for (int i = 0; i < threadCount; i++)
             {
-                for (int i = 0; i < threadCount; i++)
+
+                string newImg = Guid.NewGuid().ToString();
+                string threadName = string.Format("ThreadId: {0} Dim: {1}  Image:{2}", i, dimension, newImg);
+                try
                 {
-                    Console.WriteLine("Invoking thread {0}", i);
-
-                    string newImg = Guid.NewGuid().ToString();
-
                     Thread th = new Thread(() => InvokeWork(newImg, dimension));
+                    threads.Add(th);
+                    th.Name = threadName;
                     th.Start();
                 }
-                runall = true;
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Thread Creation Exception Name: {2}:  {0}\n{1}", ex.Message, ex.StackTrace, threadName);
+                    _errorLog.Add(new ErrorLogStruct()
+                    {
+                        Ex = ex,
+                        LogText = threadName,
+                    });
+                }
+
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Error: {0}\n{1}", ex.Message, ex.StackTrace);
-            }
-            return runall;
+            return threads;
         }
 
         private void InvokeWork(string newPath, int dimension)
         {
-            try
+            var result = _fireMethod(newPath, dimension);
+            if (result)
             {
-                var result = _fireMethod(newPath, dimension);
-            }
-            catch(System.OutOfMemoryException mex)
-            {
-                _memexceptionCount++;
-                Console.WriteLine("MemoryExcption Count {0}", _memexceptionCount);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Exception {0}\n{1}", ex.Message, ex.StackTrace);
+                System.Threading.Interlocked.Increment(ref _successCount);
             }
         }
+
+
+
+        public async Task<bool> RunTasks(int iteration, int threadCount, int dimension)
+        {
+            bool runall = false;
+            try
+            {
+                var tasks = new Task[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    Console.WriteLine("Invoking interation {0} thread {1} dimension {2}", iteration, i, dimension);
+                    string newImg = Guid.NewGuid().ToString();
+                    tasks[i] = Task.Factory.StartNew(await InvokeTask(newImg, dimension));
+                }
+                runall = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+            }
+            return runall;
+        }
+
+        private async Task<Action> InvokeTask(string newpath, int dimension)
+        {
+            try
+            {
+                var result = _fireMethod(newpath, dimension);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            return null;
+        }
+
     }
 }
