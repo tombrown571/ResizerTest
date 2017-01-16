@@ -16,34 +16,34 @@ namespace ResizerTestConsole
     /// with multiple multi-threaded calls
     /// Saving any exceptions
     /// </summary>
-    public class ImageProcessor
+    public class ImageProcessor : ImageProcessorBase
     {
-        private readonly string _imagePath;
-        private readonly string _imagefileName;
-        private readonly string _outputDir;
+        //private readonly string _imagePath;
+        //private readonly string _imagefileName;
+        //private readonly string _outputDir;
 
-        public ImageProcessor(string imagePath, string outputDir)
+        public ImageProcessor(string imagePath, string outputDir) : base (imagePath, outputDir)
         {
-            if (string.IsNullOrWhiteSpace(imagePath))
-            {
-                throw new ArgumentNullException(nameof(imagePath));
-            }
-            if (!File.Exists(imagePath))
-            {
-                throw new FileNotFoundException("missing image file", imagePath);
-            }
-            _imagePath = imagePath;
-            if (!Directory.Exists(outputDir))
-            {
-                throw new ArgumentException(string.Format("Output Directory: {0} not found", _outputDir));
-            }
-            _outputDir = outputDir;
-            FileInfo fi = new FileInfo(_imagePath);
-            _imagefileName = fi.Name;
-            Exceptions = new ConcurrentBag<ErrorLogStruct>();
+            //if (string.IsNullOrWhiteSpace(imagePath))
+            //{
+            //    throw new ArgumentNullException(nameof(imagePath));
+            //}
+            //if (!File.Exists(imagePath))
+            //{
+            //    throw new FileNotFoundException("missing image file", imagePath);
+            //}
+            //_imagePath = imagePath;
+            //if (!Directory.Exists(outputDir))
+            //{
+            //    throw new ArgumentException(string.Format("Output Directory: {0} not found", _outputDir));
+            //}
+            //_outputDir = outputDir;
+            //FileInfo fi = new FileInfo(_imagePath);
+            //_imagefileName = fi.Name;
+            //Exceptions = new ConcurrentBag<ErrorLogStruct>();
         }
 
-        public bool ProcessImage(string outputName, int maxDimension = 200)
+        public override bool ProcessImage(string outputName, int maxDimension = 200)
         {
             bool isValid = false;
             try
@@ -67,6 +67,6 @@ namespace ResizerTestConsole
             return isValid;
         }
 
-        public ConcurrentBag<ErrorLogStruct> Exceptions { get; }
+        //public ConcurrentBag<ErrorLogStruct> Exceptions { get; }
     }
 }

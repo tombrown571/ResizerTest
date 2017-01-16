@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorLogStruct.cs" />
+    <Compile Include="IImageProcessor.cs" />
     <Compile Include="ImageProcessor.cs" />
+    <Compile Include="ImageProcessorBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadRunner.cs" />

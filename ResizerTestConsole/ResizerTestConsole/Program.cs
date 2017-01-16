@@ -28,7 +28,7 @@ namespace ResizerTestConsole
 
             string[] ListImages = Directory.GetFiles(_inputDir, "*.jpg");
             ConcurrentBag<ErrorLogStruct> threadErrors = new ConcurrentBag<ErrorLogStruct>();
-            var processors = new List<ImageProcessor>();
+            var processors = new List<IImageProcessor>();
             foreach (var item in ListImages)
             {
                 processors.Add(new ImageProcessor(item, _outputDir));
@@ -70,7 +70,7 @@ namespace ResizerTestConsole
             int memexCount = 0;
             StringBuilder exceptionLog = new StringBuilder("*** Image Processing Run Exception Log ***");
             Dictionary<string, int> exceptionTypes = new Dictionary<string, int>();
-            foreach (var imageProcessor in processors)
+            foreach (IImageProcessor imageProcessor in processors)
             {
                 foreach (var errLog in imageProcessor.Exceptions)
                 {
