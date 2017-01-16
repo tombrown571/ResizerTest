@@ -19,6 +19,11 @@ namespace ResizerTestConsole
 
         private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
 
+
+        /// <summary>
+        /// This Main() is for running the stress test
+        /// </summary>
+        /// <param name="args"></param>
         static void Main2(string[] args)
         {
             bool interactiveMode = false;
@@ -150,6 +155,11 @@ namespace ResizerTestConsole
             }
         }
 
+
+        /// <summary>
+        /// This Main() is for debugging a single package 
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             ClearOutputDirectory();
