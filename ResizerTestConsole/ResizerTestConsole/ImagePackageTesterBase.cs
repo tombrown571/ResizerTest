@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ResizerTestConsole
 {
-    public abstract class ImageProcessorBase : IImageProcessor
+    public abstract class ImagePackageTesterBase : IImagePackageTester
     {
         protected readonly string _imagePath;
         protected readonly string _imagefileName;
         protected readonly string _outputDir;
 
-        public ImageProcessorBase(string imagePath, string outputDir)
+        public ImagePackageTesterBase(string imagePath, string outputDir)
         {
             if (string.IsNullOrWhiteSpace(imagePath))
             {

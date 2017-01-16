@@ -15,30 +15,79 @@ namespace ResizerTestConsole
     {
 
         private static int RunCount = 10;
-
+        private static string _ProgName = "ResizerTestConsole";
         private static string _outputDir = @"..\..\TestImages\TestOutput";
         private static string _inputDir = @"..\..\TestImages\";
 
+        private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
+
         static void Main(string[] args)
         {
-            Console.WriteLine("**** Image Resizer multithread testing ****");
+            bool interactiveMode = false;
+            string imageType = "";
+            if (args.Length <= 0)
+            {
+                Usage();
+                return;
+            }
+            if (!_testLibs.Contains(args[0]))
+            {
+                Console.WriteLine("{0} Not a valid Library to test", args[0]);
+                Usage();
+                return;
+            }
+            else
+            {
+                imageType = args[0];
+            }
+            if (args.Length > 1)
+            {
+                switch (args[1].ToLower())
+                {
+                    case "y":
+                    case "true":
+                    case "1":
+                        interactiveMode = true;
+                        break;
+                    case "n":
+                    case "false":
+                    case "0":
+                        interactiveMode = false;
+                        break;
+                    default:
+                        Console.WriteLine("Unknown interactive mode '{0}' assuming false", args[1]);
+                        break;
+                }
+            }
 
-            bool waitFinish = !(args.Length > 0);
+            Console.WriteLine("**** ImagePackage Testing: '{0}' multithreaded testing ****", imageType);
+
             ClearOutputDirectory();
 
             string[] ListImages = Directory.GetFiles(_inputDir, "*.jpg");
             ConcurrentBag<ErrorLogStruct> threadErrors = new ConcurrentBag<ErrorLogStruct>();
-            var processors = new List<IImageProcessor>();
+            var processors = new List<IImagePackageTester>();
             foreach (var item in ListImages)
             {
-                processors.Add(new ImageProcessor(item, _outputDir));
+                switch (imageType.ToLower())
+                {
+                    case "imageresizer":
+                        processors.Add(new ImageResizerPackageTester(item, _outputDir));
+                        break;
+                    case "imageprocessor":
+                        processors.Add(new ImageProcessorPackageTester(item, _outputDir));
+                        break;
+                    case "imagesharp":
+                        processors.Add(new ImageSharpPackageTester(item, _outputDir));
+                        break;
+                }
             }
             var threadRunners = new List<ThreadRunner>();
             List<int> imgDims = new List<int>() { 200, 320, 640, 768, 1024, 1080 };
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
             List<Thread> allThreads = new List<Thread>();
-            // run will each dimension on each ImageProcessor object
+            // run will each dimension on each ImageResizerPackageTester object
             foreach (var dim in imgDims)
             {
                 foreach (var p in processors.Select((value, index) => new { value, index }))
@@ -70,9 +119,9 @@ namespace ResizerTestConsole
             int memexCount = 0;
             StringBuilder exceptionLog = new StringBuilder("*** Image Processing Run Exception Log ***");
             Dictionary<string, int> exceptionTypes = new Dictionary<string, int>();
-            foreach (IImageProcessor imageProcessor in processors)
+            foreach (IImagePackageTester imagePackageTester in processors)
             {
-                foreach (var errLog in imageProcessor.Exceptions)
+                foreach (var errLog in imagePackageTester.Exceptions)
                 {
                     memexCount = MemexCount(errLog, exceptionLog, memexCount, exceptionTypes);
                 }
@@ -95,12 +144,22 @@ namespace ResizerTestConsole
             {
                 fs.WriteLine(exceptionLog.ToString());
             }
-            if (waitFinish)
+            if (interactiveMode)
             {
                 Process.Start(logfile);
                 Console.WriteLine("** Any key to Exit ");
                 Console.ReadKey();
             }
+        }
+
+        static void MainTest(string[] args)
+        {
+            ClearOutputDirectory();
+            ImageProcessorPackageTester pTest = new ImageProcessorPackageTester( Path.Combine(_inputDir, "House.jpg" ), _outputDir);
+            var testOut = Path.Combine(_outputDir, "TestOut.jpg");
+            var success = pTest.ProcessImage(testOut, 1024);
+            Console.WriteLine("Success = {0}", success);
+            Console.ReadKey();
         }
 
         private static int MemexCount(ErrorLogStruct errLog, StringBuilder exceptionLog, int memexCount,
@@ -122,6 +181,12 @@ namespace ResizerTestConsole
             return memexCount;
         }
 
+
+        private static void Usage()
+        {
+            Console.WriteLine("USAGE: {0} <TestLib, (ImageResizer|ImageProcessor|ImageSharp)>  'Library to test'", _ProgName);
+            Console.WriteLine("     : {0} [<Interactive (Y|True|1|N|False|0)>]  'optional interactive mode'", "".PadLeft(_ProgName.Length));
+        }
 
         private static void ClearOutputDirectory()
         {

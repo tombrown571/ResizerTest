@@ -2,7 +2,7 @@
 
 namespace ResizerTestConsole
 {
-    public interface IImageProcessor
+    public interface IImagePackageTester
     {
 
 
