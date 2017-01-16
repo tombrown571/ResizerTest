@@ -1,6 +1,4 @@
 ﻿using System;
-//using System.Drawing;
-//using System.Drawing.Imaging;
 using System.IO;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
@@ -10,6 +8,8 @@ namespace ResizerTestConsole
 
     /// <summary>
     /// Test package:  https://www.nuget.org/packages/ImageProcessor/
+    /// Note: Uses GDI+  so cant be used on Azure!
+    /// so not bothered to optimise the code here
     /// </summary>
     public class ImageProcessorPackageTester : ImagePackageTesterBase
     {

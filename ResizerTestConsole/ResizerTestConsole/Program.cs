@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ResizerTestConsole
 {
@@ -21,7 +19,7 @@ namespace ResizerTestConsole
 
         private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             bool interactiveMode = false;
             string imageType = "";
@@ -100,7 +98,7 @@ namespace ResizerTestConsole
                 }
             }
 
-            // wait for all to finish, and get any exceptions
+            // wait for all threads to finish,
             foreach (var thread in allThreads)
             {
                 if (thread.IsAlive)
@@ -152,10 +150,11 @@ namespace ResizerTestConsole
             }
         }
 
-        static void MainTest(string[] args)
+        static void Main(string[] args)
         {
             ClearOutputDirectory();
-            ImageProcessorPackageTester pTest = new ImageProcessorPackageTester( Path.Combine(_inputDir, "House.jpg" ), _outputDir);
+            // IImagePackageTester pTest = new ImageProcessorPackageTester( Path.Combine(_inputDir, "House.jpg" ), _outputDir);
+            IImagePackageTester pTest = new ImageSharpPackageTester(Path.Combine(_inputDir, "House.jpg"), _outputDir);
             var testOut = Path.Combine(_outputDir, "TestOut.jpg");
             var success = pTest.ProcessImage(testOut, 1024);
             Console.WriteLine("Success = {0}", success);

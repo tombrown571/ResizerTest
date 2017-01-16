@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ResizerTestConsole
 {
+
+    /// <summary>
+    /// Run the same method on multiple threads
+    /// this should expose any threading issues with the method
+    /// If it runs OK, increase the threadcount until the errors appear
+    /// (or it takes too long to complete.)
+    /// </summary>
     public class ThreadRunner
     {
         private int _successCount;
@@ -20,7 +25,7 @@ namespace ResizerTestConsole
         private ConcurrentBag<ErrorLogStruct> _errorLog;
 
         private Func<string, int, bool> _fireMethod;
-        public ThreadRunner(Func<string, int, bool> fireMethod,          ConcurrentBag<ErrorLogStruct> errorLog)
+        public ThreadRunner(Func<string, int, bool> fireMethod, ConcurrentBag<ErrorLogStruct> errorLog)
         {
             _fireMethod = fireMethod;
             _errorLog = errorLog;
