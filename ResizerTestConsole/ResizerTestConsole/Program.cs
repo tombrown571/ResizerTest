@@ -14,8 +14,9 @@ namespace ResizerTestConsole
 
         private static int _runCount = 10;
         private static string _ProgName = "ResizerTestConsole";
-        private static string _outputDir = @"..\..\TestImages\TestOutput";
-        private static string _inputDir = @"..\..\TestImages\";
+        private static string _outputDir = @"..\..\..\TestImages\TestOutput";
+        private static string _inputDir = @"..\..\..\TestImages\";
+        private static string _logfile = @"..\..\..\TestImages\TestOutput\TestRun.log";
 
         private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
         private static string[] _imageSharpAlgorithms = new[] { "Bicubic", "Triangle", "NearestNeighbor", "MitchellNetravali" };
@@ -166,7 +167,7 @@ namespace ResizerTestConsole
 
             }
             var finishMessage = string.Format("*** Finished in {0} milliseconds: Success Count: {1} Exception Count {2} *** ", elapsed, successCount, memexCount);
-            var finishMessage2 = string.Format("*** Run Details: Processor: {0}  Threads: {1}  Algorithm: {2}  *** ", imageType, _runCount, _imageSharpAlgorithm);
+            var finishMessage2 = string.Format("*** Run Details: Processor: {0}  Threads: {1} {2}  *** ", imageType, _runCount, (imageType == "ImageSharp" ? string.Format("Algorithm: {0}", _imageSharpAlgorithm) : ""));
             foreach (var exceptionType in exceptionTypes)
             {
                 exceptionLog.AppendFormat("** {0} - Count = {1}{2}", exceptionType.Key, exceptionType.Value,
@@ -176,14 +177,13 @@ namespace ResizerTestConsole
             Console.WriteLine(finishMessage2);
             exceptionLog.AppendLine(finishMessage);
             exceptionLog.AppendLine(finishMessage2);
-            var logfile = @"..\..\TestImages\TestOutput\TestRun.log";
-            using (var fs = new StreamWriter(logfile))
+            using (var fs = new StreamWriter(_logfile))
             {
                 fs.WriteLine(exceptionLog.ToString());
             }
             if (interactiveMode)
             {
-                Process.Start(logfile);
+                Process.Start(_logfile);
                 Console.WriteLine("** Any key to Exit ");
                 Console.ReadKey();
             }
