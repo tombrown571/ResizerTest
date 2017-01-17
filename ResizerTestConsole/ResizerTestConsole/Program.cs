@@ -12,13 +12,14 @@ namespace ResizerTestConsole
     class Program
     {
 
-        private static int RunCount = 10;
+        private static int _runCount = 10;
         private static string _ProgName = "ResizerTestConsole";
         private static string _outputDir = @"..\..\TestImages\TestOutput";
         private static string _inputDir = @"..\..\TestImages\";
 
         private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
-
+        private static string[] _imageSharpAlgorithms = new[] { "Bicubic", "Triangle", "NearestNeighbor", "MitchellNetravali" };
+        private static string _imageSharpAlgorithm = "NearestNeighbor";
 
         /// <summary>
         /// This Main() is for running the stress test
@@ -28,6 +29,8 @@ namespace ResizerTestConsole
         {
             bool interactiveMode = false;
             string imageType = "";
+
+            #region Command Line Args
             if (args.Length <= 0)
             {
                 Usage();
@@ -61,7 +64,30 @@ namespace ResizerTestConsole
                         Console.WriteLine("Unknown interactive mode '{0}' assuming false", args[1]);
                         break;
                 }
+                if (args.Length > 2)
+                {
+                    int argThreads;
+                    if (!int.TryParse(args[2], out argThreads))
+                    {
+                        Console.WriteLine("{0} Not a valid number of threads", args[2]);
+                        Usage();
+                        return;
+                    }
+                    _runCount = argThreads;
+                    if (args.Length > 3 && imageType == "ImageSharp")
+                    {
+                        if (!_imageSharpAlgorithms.Contains(args[3]))
+                        {
+                            Console.WriteLine("{0} Not a valid ImageSharp Algorithm");
+                            Usage();
+                            return;
+                        }
+                        _imageSharpAlgorithm = args[3];
+                    }
+                }
             }
+
+            #endregion
 
             Console.WriteLine("**** ImagePackage Testing: '{0}' multithreaded testing ****", imageType);
 
@@ -81,7 +107,12 @@ namespace ResizerTestConsole
                         processors.Add(new ImageProcessorPackageTester(item, _outputDir));
                         break;
                     case "imagesharp":
-                        processors.Add(new ImageSharpPackageTester(item, _outputDir));
+                        var imageSharpPackageTester = new ImageSharpPackageTester(item, _outputDir);
+                        if (!string.IsNullOrWhiteSpace(_imageSharpAlgorithm))
+                        {
+                            imageSharpPackageTester.ResamplerAlgorithm = _imageSharpAlgorithm;
+                        }
+                        processors.Add(imageSharpPackageTester);
                         break;
                 }
             }
@@ -95,10 +126,10 @@ namespace ResizerTestConsole
             {
                 foreach (var p in processors.Select((value, index) => new { value, index }))
                 {
-                    Console.WriteLine("Call Process {0} threads {1} dimension {2}", p.index, RunCount, dim);
+                    Console.WriteLine("Call Process {0} threads {1} dimension {2}", p.index, _runCount, dim);
                     ThreadRunner threadRunner = new ThreadRunner(p.value.ProcessImage, threadErrors);
                     threadRunners.Add(threadRunner);
-                    var threads = threadRunner.RunThreads(p.index, RunCount, dim);
+                    var threads = threadRunner.RunThreads(p.index, _runCount, dim);
                     allThreads.AddRange(threads);
                 }
             }
@@ -135,13 +166,16 @@ namespace ResizerTestConsole
 
             }
             var finishMessage = string.Format("*** Finished in {0} milliseconds: Success Count: {1} Exception Count {2} *** ", elapsed, successCount, memexCount);
+            var finishMessage2 = string.Format("*** Run Details: Processor: {0}  Threads: {1}  Algorithm: {2}  *** ", imageType, _runCount, _imageSharpAlgorithm);
             foreach (var exceptionType in exceptionTypes)
             {
                 exceptionLog.AppendFormat("** {0} - Count = {1}{2}", exceptionType.Key, exceptionType.Value,
                     Environment.NewLine);
             }
             Console.WriteLine(finishMessage);
+            Console.WriteLine(finishMessage2);
             exceptionLog.AppendLine(finishMessage);
+            exceptionLog.AppendLine(finishMessage2);
             var logfile = @"..\..\TestImages\TestOutput\TestRun.log";
             using (var fs = new StreamWriter(logfile))
             {
@@ -193,8 +227,10 @@ namespace ResizerTestConsole
 
         private static void Usage()
         {
-            Console.WriteLine("USAGE: {0} <TestLib, (ImageResizer|ImageProcessor|ImageSharp)>  'Library to test'", _ProgName);
-            Console.WriteLine("     : {0} [<Interactive (Y|True|1|N|False|0)>]  'optional interactive mode'", "".PadLeft(_ProgName.Length));
+            Console.WriteLine("USAGE: {0} <TestLib, ({1})>,  'Library to test'", _ProgName, string.Join("|", _testLibs));
+            Console.WriteLine("     : {0} [<Interactive (Y|True|1|N|False|0)>,]  'optional interactive mode: default No'", "".PadLeft(_ProgName.Length));
+            Console.WriteLine("     : {0} [<Threads (Number)>,]  'optional Threads per processor: default {1}'", "".PadLeft(_ProgName.Length), _runCount);
+            Console.WriteLine("     : {0} [<Algorithm,  ({1})>]  'optional ImageSharp Resampler Algorithm: default {2}'", "".PadLeft(_ProgName.Length), string.Join("|", _imageSharpAlgorithms), _imageSharpAlgorithm);
         }
 
         private static void ClearOutputDirectory()

@@ -12,10 +12,34 @@ namespace ResizerTestConsole
     public class ImageSharpPackageTester : ImagePackageTesterBase
     {
 
-        private readonly NearestNeighborResampler _nearestNeighborResampler;
+        private IResampler _resampler;
         public ImageSharpPackageTester(string imagePath, string outputDir) : base(imagePath, outputDir)
         {
-            _nearestNeighborResampler = new NearestNeighborResampler();
+            _resampler = new NearestNeighborResampler(); // default
+        }
+
+        public string ResamplerAlgorithm
+        {
+            set
+            {
+                switch (value.ToLower())
+                {
+                    case "bicubic":
+                        _resampler = new BicubicResampler();
+                        break;
+                    case "triangle":
+                        _resampler = new TriangleResampler();
+                        break;
+                    case "nearestneighbor":
+                        _resampler = new NearestNeighborResampler();
+                        break;
+                    case "mitchellnetravali":
+                        _resampler = new MitchellNetravaliResampler();
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid ResamplerAlgorithm");
+                }
+            }
         }
 
         public override bool ProcessImage(string outputName, int maxDimension)
@@ -35,7 +59,7 @@ namespace ResizerTestConsole
                     var newHeight = imageSharp.Height >= imageSharp.Width ? maxDimension : 0;
                     using (FileStream outStream = File.OpenWrite(outputPath))
                     {
-                        imageSharp.Resize(newWidth, newHeight, _nearestNeighborResampler, true)
+                        imageSharp.Resize(newWidth, newHeight, _resampler, true)
                             .Save(outStream);
                         //var curformat = imageSharp.CurrentImageFormat;
                         // imageSharp.MaxHeight = maxDimension;
