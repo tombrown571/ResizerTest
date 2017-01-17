@@ -40,7 +40,23 @@
       <HintPath>..\packages\ImageResizer.4.0.5\lib\net45\ImageResizer.dll</HintPath>
     </Reference>
     <Reference Include="ImageSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSharp.1.0.0-alpha1\lib\net45\ImageSharp.dll</HintPath>
+      <HintPath>..\packages\ImageSharp.1.0.0-alpha1-00048\lib\net45\ImageSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ImageSharp.Drawing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageSharp.Drawing.1.0.0-alpha1-00028\lib\net45\ImageSharp.Drawing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ImageSharp.Formats.Jpeg, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageSharp.Formats.Jpeg.1.0.0-alpha1-00028\lib\net45\ImageSharp.Formats.Jpeg.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ImageSharp.Formats.Png, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageSharp.Formats.Png.1.0.0-alpha1-00028\lib\net45\ImageSharp.Formats.Png.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ImageSharp.Processing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageSharp.Processing.1.0.0-alpha1-00028\lib\net45\ImageSharp.Processing.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

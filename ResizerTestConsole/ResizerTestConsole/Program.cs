@@ -24,7 +24,7 @@ namespace ResizerTestConsole
         /// This Main() is for running the stress test
         /// </summary>
         /// <param name="args"></param>
-        static void Main2(string[] args)
+        static void Main(string[] args)
         {
             bool interactiveMode = false;
             string imageType = "";
@@ -160,13 +160,13 @@ namespace ResizerTestConsole
         /// This Main() is for debugging a single package 
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        static void MainTest(string[] args)
         {
             ClearOutputDirectory();
             // IImagePackageTester pTest = new ImageProcessorPackageTester( Path.Combine(_inputDir, "House.jpg" ), _outputDir);
             IImagePackageTester pTest = new ImageSharpPackageTester(Path.Combine(_inputDir, "House.jpg"), _outputDir);
             var testOut = Path.Combine(_outputDir, "TestOut.jpg");
-            var success = pTest.ProcessImage(testOut, 1024);
+            var success = pTest.ProcessImage(testOut, 500);
             Console.WriteLine("Success = {0}", success);
             Console.ReadKey();
         }
