@@ -25,7 +25,8 @@ namespace ResizerTestConsole
 
                 string resizeSetting = string.Format("maxwidth={0}&maxheight={0}", maxDimension);
 
-                ImageBuilder.Current.Build(_imagePath, outputPath, new ResizeSettings(resizeSetting));
+                // not compatible with CoreCompat 
+                //ImageBuilder.Current.Build(_imagePath, outputPath, new ResizeSettings(resizeSetting));
 
                 isValid = true;
             }

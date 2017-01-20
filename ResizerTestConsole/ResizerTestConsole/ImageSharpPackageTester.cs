@@ -49,7 +49,7 @@ namespace ResizerTestConsole
             {
                 var outputPath = Path.Combine(_outputDir, outputName + ".jpg");
 
-                var size = new System.Drawing.Size(maxDimension, maxDimension);
+                var size = new Size(maxDimension, maxDimension);
 
                 using (FileStream inStream = File.OpenRead(_imagePath))
                 {

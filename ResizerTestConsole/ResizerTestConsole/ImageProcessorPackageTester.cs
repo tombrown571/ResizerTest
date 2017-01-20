@@ -3,6 +3,8 @@ using System.IO;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 
+using NetImage  = System.Drawing.Image;
+
 namespace ResizerTestConsole
 {
 
@@ -26,7 +28,7 @@ namespace ResizerTestConsole
                
                 byte[] picBytes = File.ReadAllBytes(_imagePath);
                 ISupportedImageFormat format = new JpegFormat();
-                var size = new System.Drawing.Size(maxDimension, maxDimension);
+                //var size = new  Size(maxDimension, maxDimension);
                 using (var inStream = new MemoryStream(picBytes, writable: false))
                 {
                     using (var outStream = new MemoryStream())
@@ -34,7 +36,8 @@ namespace ResizerTestConsole
                         using (var imageFactory = new ImageFactory(preserveExifData: true))
                         {
                             imageFactory.Load(inStream)
-                                .Resize(size)
+                                //.Resize(size)
+                                .Resize(null)  // will not compile with both libs system.drawing and corecompat.system.drawing in project refs
                                 .Format(format)
                                 .Save(outStream);
                         }

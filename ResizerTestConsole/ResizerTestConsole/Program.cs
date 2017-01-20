@@ -18,7 +18,7 @@ namespace ResizerTestConsole
         private static string _inputDir = @"..\..\..\TestImages\";
         private static string _logfile = @"..\..\..\TestImages\TestOutput\TestRun.log";
 
-        private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp" };
+        private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp", "SkiaSharp", "CoreCompat" };
         private static string[] _imageSharpAlgorithms = new[] { "Bicubic", "Triangle", "NearestNeighbor", "MitchellNetravali" };
         private static string _imageSharpAlgorithm = "NearestNeighbor";
 
@@ -104,9 +104,10 @@ namespace ResizerTestConsole
                     case "imageresizer":
                         processors.Add(new ImageResizerPackageTester(item, _outputDir));
                         break;
-                    case "imageprocessor":
-                        processors.Add(new ImageProcessorPackageTester(item, _outputDir));
-                        break;
+                    // not compatible with CoreCompat
+                    //case "imageprocessor":
+                    //    processors.Add(new ImageProcessorPackageTester(item, _outputDir));
+                    //    break;
                     case "imagesharp":
                         var imageSharpPackageTester = new ImageSharpPackageTester(item, _outputDir);
                         if (!string.IsNullOrWhiteSpace(_imageSharpAlgorithm))
@@ -114,6 +115,12 @@ namespace ResizerTestConsole
                             imageSharpPackageTester.ResamplerAlgorithm = _imageSharpAlgorithm;
                         }
                         processors.Add(imageSharpPackageTester);
+                        break;
+                    case "skiasharp":
+                        processors.Add(new SkiaSharpPackageTester(item, _outputDir));
+                        break;
+                    case "corecompat":
+                        processors.Add(new CoreCompatPackageTester(item, _outputDir));
                         break;
                 }
             }
