@@ -90,15 +90,15 @@
       <HintPath>..\packages\ImageResizer.4.0.5\lib\net45\ImageResizer.dll</HintPath>
     </Reference>
     <Reference Include="ImageSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSharp.1.0.0-alpha1-00048\lib\net45\ImageSharp.dll</HintPath>
+      <HintPath>..\packages\ImageSharp.1.0.0-alpha1-00102\lib\net45\ImageSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageSharp.Formats.Jpeg, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSharp.Formats.Jpeg.1.0.0-alpha1-00028\lib\net45\ImageSharp.Formats.Jpeg.dll</HintPath>
+      <HintPath>..\packages\ImageSharp.Formats.Jpeg.1.0.0-alpha1-00082\lib\net45\ImageSharp.Formats.Jpeg.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageSharp.Processing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSharp.Processing.1.0.0-alpha1-00028\lib\net45\ImageSharp.Processing.dll</HintPath>
+      <HintPath>..\packages\ImageSharp.Processing.1.0.0-alpha1-00082\lib\net45\ImageSharp.Processing.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SkiaSharp, Version=1.56.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -141,6 +141,7 @@
     <Compile Include="ImageResizerPackageTester.cs" />
     <Compile Include="ImagePackageTesterBase.cs" />
     <Compile Include="ImageSharpPackageTester.cs" />
+    <Compile Include="ImageSharpProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkiaSharpPackageTester.cs" />

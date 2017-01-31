@@ -51,6 +51,51 @@ namespace ResizerTestConsole
 
                 var size = new Size(maxDimension, maxDimension);
 
+                MemoryStream ms = new MemoryStream(File.ReadAllBytes(_imagePath));
+
+                Preset ps = new Preset()
+                {
+                    Height = maxDimension,
+                    Width = maxDimension,
+                    Name = "PresetName",
+                    Quality = 90
+                };
+
+                ImageSharpProcessor isp = new ImageSharpProcessor("outputname", ps);
+
+                using (MemoryStream outStream = isp.ResizeImage(ms))
+                {
+                    using (FileStream outFile = new FileStream(outputPath, FileMode.CreateNew))
+                    {
+                        outStream.WriteTo(outFile);
+                    }
+                }
+
+
+                isValid = true;
+
+            }
+            catch (Exception ex)
+            {
+                Exceptions.Add(new ErrorLogStruct()
+                {
+                    Ex = ex,
+                    LogText = string.Format("File: {0}, Dimension: {1}", _imagefileName, maxDimension),
+                });
+            }
+            return isValid;
+        }
+
+
+        public  bool ProcessImage_Orig(string outputName, int maxDimension)
+        {
+            bool isValid = false;
+            try
+            {
+                var outputPath = Path.Combine(_outputDir, outputName + ".jpg");
+
+                var size = new Size(maxDimension, maxDimension);
+
                 using (FileStream inStream = File.OpenRead(_imagePath))
                 {
                     ImageSharp.Image imageSharp = new ImageSharp.Image(inStream);
@@ -81,5 +126,6 @@ namespace ResizerTestConsole
             }
             return isValid;
         }
+
     }
 }
