@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +19,9 @@ namespace ResizerTestCore
 
         private static int _runCount = 3;
         private static string _ProgName = "ResizerTestCore";
-        private static string _outputDir = @"..\..\..\TestImages\TestOutput";
         private static string _inputDir = @"..\..\..\TestImages\";
-        private static string _logfile = @"..\..\..\TestImages\TestOutput\TestRun.log";
+        private static string _outputDir = Path.Combine(_inputDir, "TestOutput");
+        private static string _logfile = Path.Combine(_outputDir, "TestRun.log");
         private static string[] imgExtn = new[] {".jpg", ".jpeg", ".png", ".gif", ".bmp"};
 
         private static string[] _testLibs = new[]
@@ -44,14 +45,12 @@ namespace ResizerTestCore
 
             if (args.Length <= 0)
             {
-                Usage();
-                return;
+                UsageExit();
             }
             if (!_testLibs.Contains(args[0]))
             {
                 Console.WriteLine("{0} Not a valid Library to test", args[0]);
-                Usage();
-                return;
+                UsageExit();
             }
             else
             {
@@ -81,8 +80,7 @@ namespace ResizerTestCore
                     if (!int.TryParse(args[2], out argThreads))
                     {
                         Console.WriteLine("{0} Not a valid number of threads", args[2]);
-                        Usage();
-                        return;
+                        UsageExit();
                     }
                     _runCount = argThreads;
                     if (args.Length > 3 && imageType == "ImageSharp")
@@ -90,8 +88,7 @@ namespace ResizerTestCore
                         if (!_imageSharpAlgorithms.Contains(args[3]))
                         {
                             Console.WriteLine("{0} Not a valid ImageSharp Algorithm");
-                            Usage();
-                            return;
+                            UsageExit();
                         }
                         _imageSharpAlgorithm = args[3];
                     }
@@ -109,11 +106,11 @@ namespace ResizerTestCore
             var processors = new List<IImagePackageTester>();
             foreach (var imgFile in ListImages)
             {
-                string item = imgFile.FullName;
+                string currentFile = imgFile.FullName;
                 switch (imageType.ToLower())
                 {
                     case "imagesharp":
-                        var imageSharpPackageTester = new ImageSharpPackageTester(item, _outputDir);
+                        var imageSharpPackageTester = new ImageSharpPackageTester(currentFile, _outputDir);
                         if (!string.IsNullOrWhiteSpace(_imageSharpAlgorithm))
                         {
                             imageSharpPackageTester.ResamplerAlgorithm = _imageSharpAlgorithm;
@@ -250,14 +247,12 @@ namespace ResizerTestCore
             DirectoryInfo di = new DirectoryInfo(_inputDir);
             if (!Directory.Exists(_inputDir))
             {
-                Console.WriteLine("Test Image directory '{0}' Not Found", di.FullName);
-                Environment.Exit(1);
+                ExitMessage($"Test Image directory '{ di.FullName}' Not Found");
             }
             FileInfo[] images = di.GetFiles().Where(f => imgExtn.Contains(f.Extension.ToLower())).ToArray();
             if (images == null || images.Length == 0)
             {
-                Console.WriteLine("No Images found in Text Image directory '{0}", di.FullName);
-                Environment.Exit(1);
+                ExitMessage($"No Images found in Text Image directory '{di.FullName}");
             }
             if (!Directory.Exists(_outputDir))
             {
@@ -275,6 +270,19 @@ namespace ResizerTestCore
             return images;
         }
 
+        private static void UsageExit()
+        {
+            Usage();
+            ExitMessage("");
+        }
+
+        private static void ExitMessage(string message)
+        {
+            Console.WriteLine(message);
+            Console.WriteLine("** Any key to Exit ");
+            Console.ReadKey();
+            Environment.Exit(0);
+        }
     }
 
 }

@@ -14,9 +14,10 @@ namespace ResizerTestConsole
 
         private static int _runCount = 10;
         private static string _ProgName = "ResizerTestConsole";
-        private static string _outputDir = @"..\..\..\TestImages\TestOutput";
-        private static string _inputDir = @"..\..\..\TestImages\";
-        private static string _logfile = @"..\..\..\TestImages\TestOutput\TestRun.log";
+        private static string _inputDir = @"..\..\..\..\..\TestImages\";
+        private static string _outputDir = Path.Combine(_inputDir,"TestOutput");
+        private static string _logfile = Path.Combine(_outputDir, "TestRun.log");
+        private static string[] imgExtn = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
 
         private static string[] _testLibs = new[] { "ImageResizer", "ImageProcessor", "ImageSharp", "SkiaSharp", "CoreCompat" };
         private static string[] _imageSharpAlgorithms = new[] { "Bicubic", "Triangle", "NearestNeighbor", "MitchellNetravali" };
@@ -34,14 +35,12 @@ namespace ResizerTestConsole
             #region Command Line Args
             if (args.Length <= 0)
             {
-                Usage();
-                return;
+                UsageExit();
             }
             if (!_testLibs.Contains(args[0]))
             {
                 Console.WriteLine("{0} Not a valid Library to test", args[0]);
-                Usage();
-                return;
+                UsageExit();
             }
             else
             {
@@ -71,8 +70,7 @@ namespace ResizerTestConsole
                     if (!int.TryParse(args[2], out argThreads))
                     {
                         Console.WriteLine("{0} Not a valid number of threads", args[2]);
-                        Usage();
-                        return;
+                        UsageExit();
                     }
                     _runCount = argThreads;
                     if (args.Length > 3 && imageType == "ImageSharp")
@@ -80,36 +78,34 @@ namespace ResizerTestConsole
                         if (!_imageSharpAlgorithms.Contains(args[3]))
                         {
                             Console.WriteLine("{0} Not a valid ImageSharp Algorithm");
-                            Usage();
-                            return;
+                            UsageExit();
                         }
                         _imageSharpAlgorithm = args[3];
                     }
                 }
             }
+            FileInfo[] ListImages = CheckTestFiles();
 
             #endregion
 
             Console.WriteLine("**** ImagePackage Testing: '{0}' multithreaded testing ****", imageType);
 
-            ClearOutputDirectory();
-
-            string[] ListImages = Directory.GetFiles(_inputDir, "*.jpg");
             ConcurrentBag<ErrorLogStruct> threadErrors = new ConcurrentBag<ErrorLogStruct>();
             var processors = new List<IImagePackageTester>();
-            foreach (var item in ListImages)
+            foreach (var imgFile in ListImages)
             {
+                string currentFile = imgFile.FullName;
                 switch (imageType.ToLower())
                 {
                     case "imageresizer":
-                        processors.Add(new ImageResizerPackageTester(item, _outputDir));
+                        processors.Add(new ImageResizerPackageTester(currentFile, _outputDir));
                         break;
                     // not compatible with CoreCompat
                     //case "imageprocessor":
                     //    processors.Add(new ImageProcessorPackageTester(item, _outputDir));
                     //    break;
                     case "imagesharp":
-                        var imageSharpPackageTester = new ImageSharpPackageTester(item, _outputDir);
+                        var imageSharpPackageTester = new ImageSharpPackageTester(currentFile, _outputDir);
                         if (!string.IsNullOrWhiteSpace(_imageSharpAlgorithm))
                         {
                             imageSharpPackageTester.ResamplerAlgorithm = _imageSharpAlgorithm;
@@ -117,10 +113,10 @@ namespace ResizerTestConsole
                         processors.Add(imageSharpPackageTester);
                         break;
                     case "skiasharp":
-                        processors.Add(new SkiaSharpPackageTester(item, _outputDir));
+                        processors.Add(new SkiaSharpPackageTester(currentFile, _outputDir));
                         break;
                     case "corecompat":
-                        processors.Add(new CoreCompatPackageTester(item, _outputDir));
+                        processors.Add(new CoreCompatPackageTester(currentFile, _outputDir));
                         break;
                 }
             }
@@ -203,7 +199,7 @@ namespace ResizerTestConsole
         /// <param name="args"></param>
         static void MainTest(string[] args)
         {
-            ClearOutputDirectory();
+            CheckTestFiles();
             // IImagePackageTester pTest = new ImageProcessorPackageTester( Path.Combine(_inputDir, "House.jpg" ), _outputDir);
             IImagePackageTester pTest = new ImageSharpPackageTester(Path.Combine(_inputDir, "House.jpg"), _outputDir);
             var testOut = Path.Combine(_outputDir, "TestOut.jpg");
@@ -240,13 +236,44 @@ namespace ResizerTestConsole
             Console.WriteLine("     : {0} [<Algorithm,  ({1})>]  'optional ImageSharp Resampler Algorithm: default {2}'", "".PadLeft(_ProgName.Length), string.Join("|", _imageSharpAlgorithms), _imageSharpAlgorithm);
         }
 
-        private static void ClearOutputDirectory()
+        private static FileInfo[] CheckTestFiles()
         {
-            DirectoryInfo di = new DirectoryInfo(_outputDir);
-            foreach (FileInfo file in di.GetFiles())
+            DirectoryInfo di = new DirectoryInfo(_inputDir);
+            if (!Directory.Exists(_inputDir))
             {
-                file.Delete();
+                ExitMessage($"Test Image directory '{ di.FullName}' Not Found");
             }
+            FileInfo[] images = di.GetFiles().Where(f => imgExtn.Contains(f.Extension.ToLower())).ToArray();
+            if (images == null || images.Length == 0)
+            {
+                ExitMessage($"No Images found in Text Image directory '{di.FullName}");
+            }
+            if (!Directory.Exists(_outputDir))
+            {
+                Directory.CreateDirectory(_outputDir);
+            }
+            else
+            {
+                // ClearOutputDirectory
+                DirectoryInfo dout = new DirectoryInfo(_outputDir);
+                foreach (FileInfo file in dout.GetFiles())
+                {
+                    file.Delete();
+                }
+            }
+            return images;
+        }
+        private static void UsageExit()
+        {
+            Usage();
+            ExitMessage("");
+        }
+        private static void ExitMessage(string message)
+        {
+            Console.WriteLine(message);
+            Console.WriteLine("** Any key to Exit ");
+            Console.ReadKey();
+            Environment.Exit(0);
         }
     }
 }
