@@ -4,6 +4,7 @@
 #Project specific directories
 
 ResizerTestConsole/ResizerTestConsole/TestImages/TestOutput/*
+TestImages/TestOutput/*
 
 
 # User-specific files

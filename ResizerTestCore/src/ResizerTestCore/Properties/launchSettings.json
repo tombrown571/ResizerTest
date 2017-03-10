@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ResizerTestCore": {
+      "commandName": "Project",
+      "commandLineArgs": "ImageSharp Y 1"
+    }
+  }
+}
