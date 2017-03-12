@@ -14,7 +14,7 @@ namespace ResizerServiceTest
     class Program
     {
 
-        private static int _runCount = 3;
+        private static int _runCount = 5;
         private static string _ProgName = "ResizerServiceTest";
         private static string[] _testLibs = new[]
         {"ImageResizer", "ImageProcessor"};
@@ -89,20 +89,21 @@ namespace ResizerServiceTest
             var processors = new List<IImageServiceTester>();
             foreach (var currentFile in ListImages)
             {
-                switch (imageType.ToLower())
+                foreach (var preset in _presets)
                 {
-                    case "imageprocessor":
-                        var imageProcessorServiceTester = new ImageProcessorServiceTester(currentFile);
-                        processors.Add(imageProcessorServiceTester);
-                        break;
+                    switch (imageType.ToLower())
+                    {
+                        case "imageprocessor":
+                            var imageProcessorServiceTester = new ImageProcessorServiceTester(preset, currentFile);
+                            processors.Add(imageProcessorServiceTester);
+                            break;
+                    }
                 }
             }
             var threadRunners = new List<ThreadRunner>();
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
             List<Thread> allThreads = new List<Thread>();
-            //foreach (var preset in _presets)
-            //{
             foreach (var p in processors.Select((value, index) => new { value, index }))
             {
                 Console.WriteLine("Call Process {0} threads {1} ", p.index, _runCount);
@@ -111,7 +112,6 @@ namespace ResizerServiceTest
                 var threads = threadRunner.RunThreads(p.index, _runCount);
                 allThreads.AddRange(threads);
             }
-            //}
 
             // wait for all threads to finish,
             foreach (var thread in allThreads)
