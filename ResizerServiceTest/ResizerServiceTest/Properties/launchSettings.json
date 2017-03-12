@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ResizerServiceTest": {
+      "commandName": "Project",
+      "commandLineArgs": "ImageProcessor Y 1"
+    }
+  }
+}
