@@ -14,15 +14,16 @@ namespace ResizerServiceTest
     class Program
     {
 
-        private static int _runCount = 5;
+        private static int _runCount = 1;
         private static string _ProgName = "ResizerServiceTest";
         private static string[] _testLibs = new[]
         {"ImageResizer", "ImageProcessor"};
 
         private static string[] _presets = new[]
+        //{"full" };
         {"full", "large", "medium", "small", "thumb"};
 
-        private static string _inputDir = @"..\..\TestImages\";
+    private static string _inputDir = @"..\..\TestImages\";
         private static string _outputDir = Path.Combine(_inputDir, "TestOutput");
         private static string _logfile = Path.Combine(_outputDir, "TestRun.log");
 

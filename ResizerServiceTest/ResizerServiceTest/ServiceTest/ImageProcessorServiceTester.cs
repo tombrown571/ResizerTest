@@ -41,8 +41,13 @@ namespace ResizerServiceTest.ServiceTest
             return finishedReq;
         }
 
+  
+        public async void GetRequest()
+        {
+            var r = await GetRequestAsync();            
+        }
 
-        public bool GetRequest()
+        public bool GetRequestBool()
         {
             bool finishedReq = false;
             HttpResponseMessage response = null;

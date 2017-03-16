@@ -9,7 +9,8 @@ namespace ResizerServiceTest.Common
     public interface IImageServiceTester
     {
         Task<bool> GetRequestAsync();
-        bool GetRequest();
+        void GetRequest();
+        bool GetRequestBool();
         ConcurrentBag<ErrorLogStruct> Exceptions { get; }
     }
 }

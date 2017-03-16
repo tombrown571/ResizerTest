@@ -13,7 +13,7 @@ namespace ResizerServiceTest.Common
     /// If it runs OK, increase the threadcount until the errors appear
     /// (or it takes too long to complete.)
     /// </summary>
-    public class ThreadRunner
+    public class ThreadRunnerBool
     {
         private int _successCount;
 
@@ -24,8 +24,8 @@ namespace ResizerServiceTest.Common
 
         private ConcurrentBag<ErrorLogStruct> _errorLog;
 
-        private Action _fireMethod;
-        public ThreadRunner(Action fireMethod, ConcurrentBag<ErrorLogStruct> errorLog)
+        private Func<bool> _fireMethod;
+        public ThreadRunnerBool(Func<bool> fireMethod, ConcurrentBag<ErrorLogStruct> errorLog)
         {
             _fireMethod = fireMethod;
             _errorLog = errorLog;
@@ -40,11 +40,10 @@ namespace ResizerServiceTest.Common
                 string threadName = string.Format("ThreadId: {0}", i);
                 try
                 {
-                    Thread th = new Thread(() => _fireMethod());
+                    Thread th = new Thread(() => InvokeWork());
                     threads.Add(th);
                     th.Name = threadName;
                     th.Start();
-                    _successCount++;
                 }
                 catch (Exception ex)
                 {
@@ -55,9 +54,56 @@ namespace ResizerServiceTest.Common
                         LogText = threadName,
                     });
                 }
+
             }
             return threads;
         }
+
+        private void InvokeWork()
+        {
+            var result =  _fireMethod();
+            if (result)
+            {
+                System.Threading.Interlocked.Increment(ref _successCount);
+            }
+        }
+
+
+
+        //public async Task<bool> RunTasks(int iteration, int threadCount)
+        //{
+        //    bool runall = false;
+        //    try
+        //    {
+        //        var tasks = new Task[threadCount];
+        //        for (int i = 0; i < threadCount; i++)
+        //        {
+        //            Console.WriteLine("Invoking interation {0} thread {1} dimension {2}", iteration, i);
+        //            tasks[i] = Task.Factory.StartNew(await InvokeTask());
+        //        }
+        //        runall = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+
+        //    }
+        //    return runall;
+        //}
+
+        //private async Task<Action> InvokeTask()
+        //{
+        //    try
+        //    {
+        //         _fireMethod();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        throw;
+        //    }
+        //    return null;
+        //}
 
     }
 
